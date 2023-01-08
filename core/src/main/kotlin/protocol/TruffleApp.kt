@@ -1,6 +1,5 @@
 package io.wafflestudio.truffle.core.protocol
 
-data class TruffleRuntime(
+data class TruffleApp(
     val name: String,
-    val version: String,
 )
