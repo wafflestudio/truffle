@@ -12,12 +12,14 @@ import io.wafflestudio.truffle.core.protocol.TruffleVersion
 @JsonSubTypes(JsonSubTypes.Type(value = V1::class, name = TruffleVersion.V1))
 interface TruffleEvent {
     val version: String
+    var client: TruffleClient?
 
-    // FIXME
     data class V1(
         val app: TruffleApp,
         val runtime: TruffleRuntime,
         val exception: TruffleException,
-        override val version: String = TruffleVersion.V1
-    ) : TruffleEvent
+        override val version: String = TruffleVersion.V1,
+    ) : TruffleEvent {
+        override var client: TruffleClient? = null // FIXME
+    }
 }

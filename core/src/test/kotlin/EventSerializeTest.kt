@@ -17,7 +17,7 @@ class EventSerializeTest {
         val mapper = Jackson2ObjectMapperBuilder().build<ObjectMapper>()
 
         val eventV1: TruffleEvent = TruffleEvent.V1(
-            app = TruffleApp(name = "siksha"),
+            app = TruffleApp(name = "siksha", phase = "prod"),
             runtime = TruffleRuntime(
                 name = "java",
                 version = "17"
