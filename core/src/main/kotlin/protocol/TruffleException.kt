@@ -1,3 +1,13 @@
 package io.wafflestudio.truffle.core.protocol
 
-class TruffleException
+data class TruffleException(
+    val elements: List<Element>,
+) {
+    data class Element(
+        val className: String,
+        val methodName: String,
+        val lineNumber: Int,
+        val fileName: String,
+        val isInAppInclude: Boolean,
+    )
+}
