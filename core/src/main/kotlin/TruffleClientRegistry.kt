@@ -1,11 +1,12 @@
 package io.wafflestudio.truffle.core
 
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 
+@EnableConfigurationProperties(TruffleClientProperties::class)
 @Service
 class TruffleClientRegistry(
-    @Value("\${truffle.client}") private val clientMap: Map<String, String> = emptyMap(),
+    private val clientProperties: TruffleClientProperties,
 ) {
-    fun findByApiKey(apiKey: String): TruffleClient? = clientMap[apiKey]?.let(::TruffleClient)
+    fun findByApiKey(apiKey: String): TruffleClient? = clientProperties.apiKeys[apiKey]?.let(::TruffleClient)
 }
