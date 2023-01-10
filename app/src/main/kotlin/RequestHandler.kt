@@ -18,13 +18,13 @@ class RequestHandler(
 
     suspend fun handle(request: ServerRequest): ServerResponse {
         // FIXME: WebFilter
-        val apiKey = runCatching {
-            requireNotNull(request.headers().firstHeader("x-api-key"))
+        val client = runCatching {
+            val apiKey = requireNotNull(request.headers().firstHeader("x-api-key"))
+            requireNotNull(clientRegistry.findByApiKey(apiKey))
         }.getOrElse {
             return ServerResponse.status(HttpStatus.UNAUTHORIZED).bodyValueAndAwait(Unit)
         }
 
-        val client = clientRegistry.findByApiKey(apiKey)
         val event = request.awaitBody<TruffleEvent>().also { it.client = client }
 
         eventBus.publish(event)

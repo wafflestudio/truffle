@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service
 @EnableConfigurationProperties(TruffleClientProperties::class)
 @Service
 class TruffleClientRegistry(
-    private val clientProperties: TruffleClientProperties,
+    clientProperties: TruffleClientProperties,
 ) {
-    fun findByApiKey(apiKey: String): TruffleClient? = clientProperties.apiKeys[apiKey]?.let(::TruffleClient)
+    private val apiKeyToClient = clientProperties.info.entries.associate { (name, info) ->
+        info.apiKey to TruffleClient(name, info.slackChannel)
+    }
+
+    fun findByApiKey(apiKey: String): TruffleClient? = apiKeyToClient[apiKey]
 }
