@@ -1,11 +1,16 @@
 package io.wafflestudio.truffle.core
 
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 
+@EnableConfigurationProperties(TruffleClientProperties::class)
 @Service
 class TruffleClientRegistry(
-    @Value("\${truffle.client}") private val clientMap: Map<String, String> = emptyMap(),
+    clientProperties: TruffleClientProperties,
 ) {
-    fun findByApiKey(apiKey: String): TruffleClient? = clientMap[apiKey]?.let(::TruffleClient)
+    private val apiKeyToClient = clientProperties.info.entries.associate { (name, info) ->
+        info.apiKey to TruffleClient(name, info.slackChannel)
+    }
+
+    fun findByApiKey(apiKey: String): TruffleClient? = apiKeyToClient[apiKey]
 }

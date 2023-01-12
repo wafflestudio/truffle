@@ -24,7 +24,7 @@ class SlackTransport(
         runCatching {
             suspendCoroutine { cont ->
                 val future = slackClient.filesUpload { builder ->
-                    builder.channels(listOf(event.client!!.channelName)) // FIXME !!
+                    builder.channels(listOf(event.client!!.slackChannel)) // FIXME !!
                         .filetype("text")
                         .filename("TODO.txt") // event.app + time ->
                         .content("TODO") // event ->
