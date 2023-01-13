@@ -23,6 +23,8 @@ class EventSerializeTest {
                 version = "17"
             ),
             exception = TruffleException(
+                className = "TruffleException",
+                message = "This is for Test",
                 elements = listOf(
                     Element(
                         className = "io.wafflestudio.truffle.core.EventSerializeTest",

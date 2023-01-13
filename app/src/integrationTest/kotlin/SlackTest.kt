@@ -3,6 +3,7 @@ package io.wafflestudio.truffle
 import io.wafflestudio.truffle.core.TruffleEvent
 import io.wafflestudio.truffle.core.protocol.TruffleApp
 import io.wafflestudio.truffle.core.protocol.TruffleException
+import io.wafflestudio.truffle.core.protocol.TruffleException.Element
 import io.wafflestudio.truffle.core.protocol.TruffleRuntime
 import io.wafflestudio.truffle.core.protocol.TruffleVersion
 import kotlinx.coroutines.delay
@@ -21,14 +22,7 @@ class SlackTest @Autowired constructor(
         webTestClient.post()
             .uri("/events")
             .header("x-api-key", "test")
-            .bodyValue(
-                TruffleEvent.V1(
-                    app = TruffleApp(name = "integrationTest", phase = "dev"),
-                    runtime = TruffleRuntime(name = "java", version = "17"),
-                    exception = TruffleException(elements = listOf()),
-                    version = TruffleVersion.V1
-                )
-            )
+            .bodyValue(event)
             .exchange()
             .expectStatus()
             .isOk
@@ -36,4 +30,30 @@ class SlackTest @Autowired constructor(
         // delay for subscriber
         delay(2000)
     }
+
+    private val event = TruffleEvent.V1(
+        app = TruffleApp(name = "integrationTest", phase = "dev"),
+        runtime = TruffleRuntime(name = "java", version = "17"),
+        exception = TruffleException(
+            className = "TruffleError",
+            message = "This is for test.",
+            elements = listOf(
+                Element(
+                    className = "io.wafflestudio.truffle.core.EventSerializeTest",
+                    methodName = "eventV1",
+                    lineNumber = 16,
+                    fileName = "EventSerializeTest.kt",
+                    isInAppInclude = true,
+                ),
+                Element(
+                    className = "io.wafflestudio.truffle.core.EventSerializeTest",
+                    methodName = "eventV2",
+                    lineNumber = 19,
+                    fileName = "EventSerializeTest.kt",
+                    isInAppInclude = true,
+                )
+            )
+        ),
+        version = TruffleVersion.V1
+    )
 }

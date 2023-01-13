@@ -1,6 +1,8 @@
 package io.wafflestudio.truffle.core.protocol
 
 data class TruffleException(
+    val className: String,
+    val message: String?,
     val elements: List<Element>,
 ) {
     data class Element(
