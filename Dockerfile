@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . /app
 RUN ./gradlew :app:bootJar
 EXPOSE 8080
-ENTRYPOINT java $JAVA_OPTS -jar app/build/libs/app.jar
+ENTRYPOINT java $JAVA_OPTS -jar app/build/libs/truffle-app.jar
