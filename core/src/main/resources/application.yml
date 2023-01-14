@@ -1,0 +1,8 @@
+spring.profiles.active: local
+
+secret-names: dev/truffle
+
+transport:
+  slack:
+    enabled: true
+    token:

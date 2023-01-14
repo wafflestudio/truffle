@@ -21,7 +21,7 @@ class TruffleEventBus {
 
     fun publish(event: TruffleEvent) {
         if (!events.tryEmit(event)) {
-            logger.warn("[TruffleEventBus] bufferOverflow. Discarded $event")
+            logger.warn("[TruffleEventBus] bufferOverflow. Discarded {}.", event)
         }
     }
 
