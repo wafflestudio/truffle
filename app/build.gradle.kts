@@ -20,3 +20,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-webflux-ui:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
 }
+
+tasks.bootJar {
+    archiveFileName.set("truffle-app.jar")
+}

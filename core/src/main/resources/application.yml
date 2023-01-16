@@ -6,3 +6,9 @@ transport:
   slack:
     enabled: true
     token:
+
+---
+
+spring.config.activate.on-profile: prod
+
+secret-names: prod/truffle
