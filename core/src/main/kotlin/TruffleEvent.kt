@@ -18,6 +18,7 @@ interface TruffleEvent {
         val app: TruffleApp,
         val runtime: TruffleRuntime,
         val exception: TruffleException,
+        val description: String? = null,
         override val version: String = TruffleVersion.V1,
     ) : TruffleEvent {
         override var client: TruffleClient? = null // FIXME

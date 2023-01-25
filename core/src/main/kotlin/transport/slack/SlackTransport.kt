@@ -38,16 +38,22 @@ class SlackTransport(
 
         if (event is TruffleEvent.V1) {
             filetype("text")
-            title("${client.name}_${LocalDateTime.now()}.txt")
+            title("${event.app.name}-${event.app.phase}_${LocalDateTime.now()}.txt")
             channels(listOf(client.slackChannel))
             content(
                 buildString {
-                    event.exception.elements.forEach {
-                        appendLine("${it.className} in ${it.methodName} at line ${it.lineNumber}")
+                    val elements = event.exception.elements
+
+                    if (elements.isNotEmpty()) {
+                        elements.forEach {
+                            appendLine("${it.className} in ${it.methodName} at line ${it.lineNumber}")
+                        }
+                    } else {
+                        appendLine()
                     }
                 }
             )
-            initialComment("${event.exception.className} : ${event.exception.message}")
+            initialComment("${event.exception.className} : ${event.exception.message}\n${event.description ?: ""}")
         }
 
         return this

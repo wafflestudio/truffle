@@ -54,6 +54,7 @@ class SlackTest @Autowired constructor(
                 )
             )
         ),
+        description = "description",
         version = TruffleVersion.V1
     )
 }

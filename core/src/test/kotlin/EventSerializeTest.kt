@@ -35,6 +35,7 @@ class EventSerializeTest {
                     )
                 )
             ),
+            description = "description",
             version = "v1"
         )
 
