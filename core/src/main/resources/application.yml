@@ -1,14 +1,17 @@
 spring.profiles.active: local
 
-secret-names: dev/truffle
-
-transport:
-  slack:
-    enabled: true
-    token:
+spring:
+  r2dbc:
+    url: r2dbc:h2:mem:///testdb
+    username: sa
+    password: test
 
 ---
 
 spring.config.activate.on-profile: prod
 
-secret-names: prod/truffle
+spring:
+  r2dbc:
+    url:
+    username:
+    password:

@@ -1,20 +1,22 @@
 package io.wafflestudio.truffle.core
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import io.wafflestudio.truffle.core.store.r2dbc.AppRepository
 import org.springframework.stereotype.Service
 
 interface TruffleClientRegistry {
-    fun findByApiKey(apiKey: String): TruffleClient?
+    suspend fun findByApiKey(apiKey: String): TruffleClient?
 }
 
-@EnableConfigurationProperties(TruffleClientProperties::class)
 @Service
 class TruffleClientRegistryImpl(
-    clientProperties: TruffleClientProperties,
+    private val appRepository: AppRepository,
 ) : TruffleClientRegistry {
-    private val apiKeyToClient = clientProperties.info.entries.associate { (name, info) ->
-        info.apiKey to TruffleClient(name, info.slackChannel)
-    }
 
-    override fun findByApiKey(apiKey: String): TruffleClient? = apiKeyToClient[apiKey]
+    override suspend fun findByApiKey(apiKey: String): TruffleClient? =
+        appRepository.findByApiKey(apiKey)?.let {
+            TruffleClient(
+                name = it.name,
+                slackChannel = it.slackChannel
+            )
+        }
 }
