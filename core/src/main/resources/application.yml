@@ -15,3 +15,8 @@ spring:
     url:
     username:
     password:
+
+transport:
+  slack:
+    enabled: true
+    token:

@@ -1,0 +1,23 @@
+###
+POST http://localhost:8080/events
+x-api-key: test-api-key
+
+{
+  "version":"v1",
+  "app":{"name":"siksha","phase":"prod"},
+  "runtime":{"name":"java","version":"17"},
+  "exception":{
+    "className":"TruffleException",
+    "message":"This is for Test",
+    "elements":[
+      {
+        "className":"io.wafflestudio.truffle.core.extra.EventSerializeTest",
+        "methodName":"eventV1",
+        "lineNumber":16,
+        "fileName":"extra/EventSerializeTest.ktest.kt",
+        "isInAppInclude":true
+      }
+    ]
+   },
+   "description":"description"
+}

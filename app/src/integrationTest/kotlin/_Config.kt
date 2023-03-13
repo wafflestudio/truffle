@@ -35,7 +35,7 @@ class IntegrationTestConfig(
 @Primary
 @Service
 class TestClientClientRegistry : TruffleClientRegistry {
-    override fun findByApiKey(apiKey: String): TruffleClient? =
+    override suspend fun findByApiKey(apiKey: String): TruffleClient? =
         if (apiKey == "test") {
             TruffleClient(name = "integrationTest", slackChannel = "truffle-snutt-dev")
         } else {
