@@ -8,7 +8,7 @@ data class AppTable(
     @Id
     val id: Long = 0L,
     val name: String,
-    val phase: String?,
+    val phase: String,
     val apiKey: String,
     val slackChannel: String?,
 )

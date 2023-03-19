@@ -5,9 +5,7 @@ spring:
     url: r2dbc:h2:mem:///testdb
     username: sa
     password: test
-
 ---
-
 spring.config.activate.on-profile: prod
 
 spring:
@@ -15,8 +13,3 @@ spring:
     url:
     username:
     password:
-
-transport:
-  slack:
-    enabled: true
-    token:

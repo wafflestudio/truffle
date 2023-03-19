@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
 class SlackTransport(
-    private val properties: SlackProperties,
+    token: String,
 ) : TruffleTransport {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val slackClient: AsyncMethodsClient by lazy { Slack.getInstance().methodsAsync(properties.token) }
+    private val slackClient: AsyncMethodsClient by lazy { Slack.getInstance().methodsAsync(token) }
 
     override suspend fun send(event: TruffleEvent) {
         val targetChannel = event.client?.slackChannel ?: return
