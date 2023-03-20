@@ -20,10 +20,10 @@ class TruffleClientRegistryImpl(
     override suspend fun findByApiKey(apiKey: String): TruffleClient? =
         appCache.get(apiKey)
 
-    private val appCache: Cache<String, TruffleClient?> = cacheBuilder.build(
+    private val appCache: Cache<String, TruffleClient> = cacheBuilder.build(
         name = "TruffleClientRegistry:AppCache",
         ttl = Duration.ofHours(1),
     ) { apiKey ->
-        appRepository.findByApiKey(apiKey)?.let { TruffleClient(it.name, it.slackChannel) }
+        appRepository.findByApiKey(apiKey)?.let { TruffleClient(it.id, it.name, it.phase, it.slackChannel) }
     }
 }

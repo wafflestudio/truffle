@@ -2,7 +2,6 @@ package io.wafflestudio.truffle.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.wafflestudio.truffle.core.protocol.TruffleApp
 import io.wafflestudio.truffle.core.protocol.TruffleException
 import io.wafflestudio.truffle.core.protocol.TruffleException.Element
 import io.wafflestudio.truffle.core.protocol.TruffleRuntime
@@ -17,7 +16,6 @@ class EventSerializeTest {
         val mapper = Jackson2ObjectMapperBuilder().build<ObjectMapper>()
 
         val eventV1: TruffleEvent = TruffleEvent.V1(
-            app = TruffleApp(name = "siksha", phase = "prod"),
             runtime = TruffleRuntime(
                 name = "java",
                 version = "17"
