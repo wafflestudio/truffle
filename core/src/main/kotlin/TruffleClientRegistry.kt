@@ -1,20 +1,29 @@
 package io.wafflestudio.truffle.core
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import io.wafflestudio.truffle.core.store.cache.Cache
+import io.wafflestudio.truffle.core.store.cache.CacheBuilder
+import io.wafflestudio.truffle.core.store.cache.caffeine.CaffeineCacheBuilder
+import io.wafflestudio.truffle.core.store.r2dbc.AppRepository
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 interface TruffleClientRegistry {
-    fun findByApiKey(apiKey: String): TruffleClient?
+    suspend fun findByApiKey(apiKey: String): TruffleClient?
 }
 
-@EnableConfigurationProperties(TruffleClientProperties::class)
 @Service
 class TruffleClientRegistryImpl(
-    clientProperties: TruffleClientProperties,
+    private val appRepository: AppRepository,
+    cacheBuilder: CacheBuilder = CaffeineCacheBuilder(),
 ) : TruffleClientRegistry {
-    private val apiKeyToClient = clientProperties.info.entries.associate { (name, info) ->
-        info.apiKey to TruffleClient(name, info.slackChannel)
-    }
 
-    override fun findByApiKey(apiKey: String): TruffleClient? = apiKeyToClient[apiKey]
+    override suspend fun findByApiKey(apiKey: String): TruffleClient? =
+        appCache.get(apiKey)
+
+    private val appCache: Cache<String, TruffleClient?> = cacheBuilder.build(
+        name = "TruffleClientRegistry:AppCache",
+        ttl = Duration.ofHours(1),
+    ) { apiKey ->
+        appRepository.findByApiKey(apiKey)?.let { TruffleClient(it.name, it.phase) }
+    }
 }
