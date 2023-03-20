@@ -11,6 +11,7 @@ import io.wafflestudio.truffle.core.store.r2dbc.ExceptionEventRepository
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionEventTable
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionRepository
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable
+import io.wafflestudio.truffle.core.transport.TruffleTransport
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -21,6 +22,7 @@ import java.time.Duration
 class StoreEventHandler(
     private val exceptionRepository: ExceptionRepository,
     private val exceptionEventRepository: ExceptionEventRepository,
+    private val transport: TruffleTransport,
     private val mapper: ObjectMapper,
     private val mutex: Mutex = Mutex(),
     cacheBuilder: CacheBuilder = CaffeineCacheBuilder(maximumSize = 100),
@@ -54,6 +56,10 @@ class StoreEventHandler(
         )
 
         exceptionEventRepository.save(newExceptionEventTable)
+
+        if (!exceptionTable.ignore) {
+            transport.send(event)
+        }
     }
 }
 
