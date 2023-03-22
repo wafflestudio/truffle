@@ -1,10 +1,9 @@
-package io.wafflestudio.truffle.core
+package io.wafflestudio.truffle.core.protocol
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.wafflestudio.truffle.core.protocol.TruffleException
+import io.wafflestudio.truffle.core.TruffleEvent
 import io.wafflestudio.truffle.core.protocol.TruffleException.Element
-import io.wafflestudio.truffle.core.protocol.TruffleRuntime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
@@ -25,10 +24,10 @@ class EventSerializeTest {
                 message = "This is for Test",
                 elements = listOf(
                     Element(
-                        className = "io.wafflestudio.truffle.core.EventSerializeTest",
+                        className = "io.wafflestudio.truffle.core.protocol.EventSerializeTest",
                         methodName = "eventV1",
                         lineNumber = 16,
-                        fileName = "EventSerializeTest.kt",
+                        fileName = "protocol/EventSerializeTest.kt",
                         isInAppInclude = true,
                     )
                 )
