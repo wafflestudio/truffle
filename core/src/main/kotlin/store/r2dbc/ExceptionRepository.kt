@@ -4,9 +4,5 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 interface ExceptionRepository : CoroutineCrudRepository<ExceptionTable, Long> {
-    suspend fun findAllByAppIdAndClassNameAndHashCode(
-        appId: Long,
-        className: String,
-        hashCode: Int,
-    ): Flow<ExceptionTable>
+    fun findAllByAppIdAndClassNameAndHashCode(appId: Long, className: String, hashCode: Int): Flow<ExceptionTable>
 }
