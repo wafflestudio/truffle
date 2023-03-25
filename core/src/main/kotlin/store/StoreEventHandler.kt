@@ -10,6 +10,7 @@ import io.wafflestudio.truffle.core.store.cache.caffeine.CaffeineCacheBuilder
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionEventRepository
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionEventTable
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionRepository
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionStatus
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable
 import io.wafflestudio.truffle.core.transport.TruffleTransport
 import kotlinx.coroutines.flow.firstOrNull
@@ -57,7 +58,7 @@ class StoreEventHandler(
 
         exceptionEventRepository.save(newExceptionEventTable)
 
-        if (!exceptionTable.ignore) {
+        if (exceptionTable.status != ExceptionStatus.IGNORED.value) {
             transport.send(event)
         }
     }
