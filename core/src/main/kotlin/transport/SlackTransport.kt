@@ -1,15 +1,19 @@
-package io.wafflestudio.truffle.core.transport.slack
+package io.wafflestudio.truffle.core.transport
 
 import com.slack.api.Slack
 import com.slack.api.methods.AsyncMethodsClient
 import com.slack.api.methods.request.files.FilesUploadRequest.FilesUploadRequestBuilder
 import io.wafflestudio.truffle.core.TruffleEvent
-import io.wafflestudio.truffle.core.transport.TruffleTransport
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
+@ConditionalOnProperty("transport.slack.enabled", matchIfMissing = false)
+@Component
 class SlackTransport(
-    token: String,
+    @Value("\${transport.slack.token}") token: String,
 ) : TruffleTransport {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val slackClient: AsyncMethodsClient by lazy { Slack.getInstance().methodsAsync(token) }
@@ -32,7 +36,7 @@ class SlackTransport(
     private fun FilesUploadRequestBuilder.apply(event: TruffleEvent, channel: String): FilesUploadRequestBuilder {
         if (event is TruffleEvent.V1) {
             filetype("text")
-            title("${event.app.name}-${event.app.phase}_${LocalDateTime.now()}.txt")
+            title("${event.client?.name}-${event.client?.phase}_${LocalDateTime.now()}.txt")
             channels(listOf(channel))
             content(
                 buildString {

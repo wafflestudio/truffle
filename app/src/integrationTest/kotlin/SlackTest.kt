@@ -1,7 +1,6 @@
 package io.wafflestudio.truffle
 
 import io.wafflestudio.truffle.core.TruffleEvent
-import io.wafflestudio.truffle.core.protocol.TruffleApp
 import io.wafflestudio.truffle.core.protocol.TruffleException
 import io.wafflestudio.truffle.core.protocol.TruffleException.Element
 import io.wafflestudio.truffle.core.protocol.TruffleRuntime
@@ -32,7 +31,6 @@ class SlackTest @Autowired constructor(
     }
 
     private val event = TruffleEvent.V1(
-        app = TruffleApp(name = "integrationTest", phase = "dev"),
         runtime = TruffleRuntime(name = "java", version = "17"),
         exception = TruffleException(
             className = "TruffleError",
