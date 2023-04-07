@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.coRouter
 
 @SpringBootApplication
-class TruffleApplication(
+class ConsumerApplication(
     private val requestHandler: RequestHandler,
 ) {
 
@@ -23,7 +23,7 @@ class TruffleApplication(
 }
 
 fun main() {
-    val app = runApplication<TruffleApplication>()
+    val app = runApplication<ConsumerApplication>()
 
     val bus = app.getBean<TruffleEventBus>()
     val handlers = app.getBeansOfType(TruffleEventHandler::class.java)
