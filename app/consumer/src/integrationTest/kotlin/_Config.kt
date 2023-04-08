@@ -15,7 +15,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @AutoConfigureWebTestClient
-@SpringBootTest(classes = [TruffleApplication::class])
+@SpringBootTest(classes = [ConsumerApplication::class])
 annotation class IntegrationTest
 
 @Configuration
@@ -37,7 +37,7 @@ class IntegrationTestConfig(
 class TestClientClientRegistry : TruffleClientRegistry {
     override suspend fun findByApiKey(apiKey: String): TruffleClient? =
         if (apiKey == "test") {
-            TruffleClient(name = "integrationTest", slackChannel = "truffle-snutt-dev")
+            TruffleClient(id = 1, name = "integrationTest", slackChannel = "truffle-snutt-dev", phase = "development")
         } else {
             null
         }

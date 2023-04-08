@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.8.0"
     kotlin("plugin.spring") version "1.8.0"
+    kotlin("kapt") version "1.8.0"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
@@ -18,6 +19,7 @@ allprojects {
 
     apply {
         plugin("org.jetbrains.kotlin.jvm")
+        plugin("org.jetbrains.kotlin.kapt")
         plugin("io.spring.dependency-management")
         plugin("kotlin-allopen")
         plugin("kotlin-spring")
@@ -43,6 +45,7 @@ allprojects {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
             jvmTarget = "17"
+            javaParameters = true
         }
     }
 
