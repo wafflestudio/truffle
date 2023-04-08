@@ -12,9 +12,3 @@ dependencies {
     implementation("com.slack.api:slack-api-client:1.27.2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.3")
 }
-
-sourceSets {
-    named("main") {
-        java.srcDir("$buildDir/generated/source/kapt/main")
-    }
-}
