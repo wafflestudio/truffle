@@ -2,9 +2,9 @@ package io.wafflestudio.truffle
 
 import io.wafflestudio.truffle.core.TruffleEvent
 import io.wafflestudio.truffle.core.protocol.TruffleException
-import io.wafflestudio.truffle.core.protocol.TruffleException.Element
 import io.wafflestudio.truffle.core.protocol.TruffleRuntime
 import io.wafflestudio.truffle.core.protocol.TruffleVersion
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable.Element
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test

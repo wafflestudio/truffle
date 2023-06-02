@@ -4,7 +4,8 @@ import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import io.wafflestudio.truffle.api.ApiError
+import io.wafflestudio.truffle.api.ApiError.UNAUTHORIZED
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -19,13 +20,16 @@ import java.util.Date
 import javax.crypto.SecretKey
 
 @Component
-class ApiSecurityFilter : HandlerFilterFunction<ServerResponse, ServerResponse> {
+class ApiSecurityFilter(
+    @Value("\${security.key}") private val shaKey: String,
+) : HandlerFilterFunction<ServerResponse, ServerResponse> {
 
     companion object {
-        private val key: SecretKey = Keys.hmacShaKeyFor("truffleistrufflewafflestudioiswafflestudio".toByteArray())
-        private val parser: JwtParser = Jwts.parserBuilder().setSigningKey(key).build()
         const val APP_ID = "APP_ID"
     }
+
+    private val key: SecretKey = Keys.hmacShaKeyFor(shaKey.toByteArray())
+    private val parser: JwtParser = Jwts.parserBuilder().setSigningKey(key).build()
 
     override fun filter(request: ServerRequest, next: HandlerFunction<ServerResponse>): Mono<ServerResponse> {
         val token = runCatching {
@@ -75,5 +79,5 @@ val ServerRequest.appId: Long
     get() = runCatching {
         attributes()[ApiSecurityFilter.APP_ID] as Long
     }.getOrElse {
-        throw ApiError.UnAuthorized()
+        throw UNAUTHORIZED.exception
     }

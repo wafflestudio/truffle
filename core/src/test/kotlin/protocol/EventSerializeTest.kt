@@ -3,7 +3,7 @@ package io.wafflestudio.truffle.core.protocol
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.wafflestudio.truffle.core.TruffleEvent
-import io.wafflestudio.truffle.core.protocol.TruffleException.Element
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable.Element
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder

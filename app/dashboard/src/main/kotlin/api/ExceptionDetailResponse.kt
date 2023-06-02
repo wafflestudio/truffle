@@ -1,22 +1,15 @@
 package io.wafflestudio.truffle.api
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import io.wafflestudio.truffle.core.protocol.TruffleException
+import com.querydsl.core.annotations.QueryProjection
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable.Element
 import java.time.Instant
 
-data class ExceptionDetailResponse(
+data class ExceptionDetailResponse @QueryProjection constructor(
     val id: Long,
     val className: String,
     val message: String?,
-    @JsonIgnore
-    val elementStr: String,
+    val elements: List<Element>,
     val createdAt: Instant,
     val lastEventAt: Instant,
     val eventCnt: Long,
-) {
-    val elements: List<TruffleException.Element> = mapper.readValue(elementStr)
-}
-
-private val mapper = jacksonObjectMapper()
+)

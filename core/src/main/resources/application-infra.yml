@@ -1,4 +1,4 @@
-spring.profiles.active: local
+spring.config.activate.on-profile: local
 
 spring:
   r2dbc:

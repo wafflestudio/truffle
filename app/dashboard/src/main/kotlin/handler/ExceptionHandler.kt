@@ -1,8 +1,9 @@
 package io.wafflestudio.truffle.handler
 
 import com.querydsl.core.types.Projections
-import io.wafflestudio.truffle.api.ApiError.Forbidden
-import io.wafflestudio.truffle.api.ApiError.NotFound
+import io.wafflestudio.truffle.api.ApiError.BAD_REQUEST
+import io.wafflestudio.truffle.api.ApiError.FORBIDDEN
+import io.wafflestudio.truffle.api.ApiError.NOT_FOUND
 import io.wafflestudio.truffle.api.ExceptionDetailResponse
 import io.wafflestudio.truffle.api.ExceptionListResponse
 import io.wafflestudio.truffle.api.ExceptionListResponse.ExceptionBriefResponse
@@ -21,6 +22,7 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
+import org.springframework.web.reactive.function.server.buildAndAwait
 
 @Controller
 class ExceptionHandler(
@@ -30,10 +32,14 @@ class ExceptionHandler(
 
     suspend fun gets(request: ServerRequest): ServerResponse {
         val appId: Long = request.appId
-        val page: Long = request.paramLong("page")
+        val page: Long = request.paramLong("page") - 1
         val size: Long = request.paramLong("size")
         val status: Int? = runCatching { ExceptionStatus.valueOf(request.queryParam("status").get()).value }
             .getOrNull()
+
+        if (page < 0 || size > 20) {
+            throw BAD_REQUEST.exception
+        }
 
         val content = exceptionQueryDsl.gets(appId = appId, status = status, page = page, size = size)
         val totalCnt = if (status != null) {
@@ -55,7 +61,7 @@ class ExceptionHandler(
         val appId = request.appId
         val exceptionId = request.pathLong("id")
 
-        val response = exceptionQueryDsl.get(appId = appId, exceptionId = exceptionId) ?: throw NotFound()
+        val response = exceptionQueryDsl.get(appId = appId, exceptionId = exceptionId) ?: throw NOT_FOUND.exception
 
         return ServerResponse.ok().bodyValueAndAwait(response)
     }
@@ -65,15 +71,15 @@ class ExceptionHandler(
         val exceptionId = request.pathLong("id")
         val newStatus = request.awaitBody<UpdateExceptionRequest>().status
 
-        val exceptionTable = exceptionRepository.findById(exceptionId) ?: throw NotFound()
+        val exceptionTable = exceptionRepository.findById(exceptionId) ?: throw NOT_FOUND.exception
 
         if (exceptionTable.appId != appId) {
-            throw Forbidden()
+            throw FORBIDDEN.exception
         }
 
         exceptionRepository.save(exceptionTable.copy(status = newStatus.value))
 
-        return ServerResponse.ok().bodyValueAndAwait(Unit)
+        return ServerResponse.ok().buildAndAwait()
     }
 }
 
@@ -120,7 +126,7 @@ private suspend fun QueryDslRepository.get(appId: Long, exceptionId: Long): Exce
                 exceptionTable.id,
                 exceptionTable.className,
                 exceptionEventTable.message,
-                exceptionTable.elements.`as`("element_str"),
+                exceptionTable.elements,
                 exceptionTable.createdAt,
                 exceptionEventTable.createdAt.max().`as`("last_event_at"),
                 exceptionEventTable.id.count().`as`("event_cnt"),

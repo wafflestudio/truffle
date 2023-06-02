@@ -8,6 +8,7 @@ import io.wafflestudio.truffle.core.protocol.TruffleException
 import io.wafflestudio.truffle.core.protocol.TruffleRuntime
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionEventRepository
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionRepository
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable.Element
 import io.wafflestudio.truffle.core.transport.TruffleTransport
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -28,7 +29,6 @@ class StoreEventHandlerTest @Autowired constructor(
         exceptionRepository = exceptionRepository,
         exceptionEventRepository = exceptionEventRepository,
         transport = transport,
-        mapper = mapper,
         cacheBuilder = NoOpCacheBuilder()
     )
     val protoEvent = TruffleEvent.V1(
@@ -40,7 +40,7 @@ class StoreEventHandlerTest @Autowired constructor(
             className = "TruffleException",
             message = "This is for Test",
             elements = listOf(
-                TruffleException.Element(
+                Element(
                     className = "io.wafflestudio.truffle.core.protocol.EventSerializeTest",
                     methodName = "eventV1",
                     lineNumber = 16,
@@ -83,7 +83,7 @@ class StoreEventHandlerTest @Autowired constructor(
         savedException.run {
             assertThat(appId).isEqualTo(client.id)
             assertThat(className).isEqualTo(clientEvent.exception.className)
-            assertThat(elements).isEqualTo(mapper.writeValueAsString(clientEvent.exception.elements))
+            assertThat(elements).isEqualTo(clientEvent.exception.elements)
             assertThat(hashCode).isEqualTo(mapper.writeValueAsString(clientEvent.exception.elements).hashCode())
         }
 
@@ -121,7 +121,7 @@ class StoreEventHandlerTest @Autowired constructor(
         savedException.run {
             assertThat(appId).isEqualTo(client.id)
             assertThat(className).isEqualTo(clientEvent.exception.className)
-            assertThat(elements).isEqualTo(mapper.writeValueAsString(clientEvent.exception.elements))
+            assertThat(elements).isEqualTo(clientEvent.exception.elements)
             assertThat(hashCode).isEqualTo(mapper.writeValueAsString(clientEvent.exception.elements).hashCode())
         }
 

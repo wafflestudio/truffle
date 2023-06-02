@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    group:
+      "default": "local"
+      "local": "infra"
+      "prod": "infra"
+
+server:
+  shutdown: graceful
+
+security:
+  key: "truffleistrufflewafflestudioiswafflestudio"

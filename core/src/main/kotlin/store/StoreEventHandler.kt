@@ -12,6 +12,7 @@ import io.wafflestudio.truffle.core.store.r2dbc.ExceptionEventTable
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionRepository
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionStatus
 import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable.Element
 import io.wafflestudio.truffle.core.transport.TruffleTransport
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
@@ -46,10 +47,10 @@ class StoreEventHandler(
         val cacheKey = ExceptionTableCacheKey(
             appId = client.id,
             className = exception.className,
-            elements = mapper.writeValueAsString(exception.elements)
+            elements = exception.elements
         )
 
-        val exceptionTable = mutex.withLock {
+        val exceptionTable = exceptionTableCache.get(cacheKey) ?: mutex.withLock {
             exceptionTableCache.get(cacheKey) ?: run {
                 exceptionTableCache.evict(cacheKey)
 
@@ -58,6 +59,7 @@ class StoreEventHandler(
                         appId = cacheKey.appId,
                         className = cacheKey.className,
                         elements = cacheKey.elements,
+                        hashCode = cacheKey.elements.hashValue,
                         message = exception.message
                     )
                 )
@@ -80,14 +82,21 @@ class StoreEventHandler(
             transport.send(event)
         }
     }
+
+    private suspend fun ExceptionRepository.get(key: ExceptionTableCacheKey): ExceptionTable? =
+        findAllByAppIdAndClassNameAndHashCode(
+            key.appId,
+            key.className,
+            key.elements.hashValue
+        )
+            .firstOrNull { it.elements == key.elements }
+
+    private data class ExceptionTableCacheKey(
+        val appId: Long,
+        val className: String,
+        val elements: List<Element>,
+    )
+
+    private val List<Element>.hashValue: Int
+        get() = mapper.writeValueAsString(this).hashCode()
 }
-
-private data class ExceptionTableCacheKey(
-    val appId: Long,
-    val className: String,
-    val elements: String,
-)
-
-private suspend fun ExceptionRepository.get(key: ExceptionTableCacheKey): ExceptionTable? =
-    findAllByAppIdAndClassNameAndHashCode(key.appId, key.className, key.elements.hashCode())
-        .firstOrNull { it.elements == key.elements }

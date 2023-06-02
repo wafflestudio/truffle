@@ -1,10 +1,13 @@
 package io.wafflestudio.truffle.api
 
-sealed class ApiError : RuntimeException() {
-    abstract val status: Int
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
-    class UnAuthorized(override val status: Int = 401) : ApiError()
-    class Forbidden(override val status: Int = 403) : ApiError()
-    class BadRequest(override val status: Int = 400) : ApiError()
-    class NotFound(override val status: Int = 404) : ApiError()
+enum class ApiError(private val status: HttpStatus) {
+    BAD_REQUEST(HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED),
+    NOT_FOUND(HttpStatus.NOT_FOUND),
+    FORBIDDEN(HttpStatus.FORBIDDEN);
+
+    val exception: ResponseStatusException get() = ResponseStatusException(status)
 }

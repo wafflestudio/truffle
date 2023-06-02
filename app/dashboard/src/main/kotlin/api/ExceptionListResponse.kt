@@ -1,8 +1,9 @@
 package io.wafflestudio.truffle.api
 
+import com.querydsl.core.annotations.QueryProjection
 import java.time.Instant
 
-data class ExceptionListResponse(
+data class ExceptionListResponse @QueryProjection constructor(
     val content: List<ExceptionBriefResponse>,
     val hasNext: Boolean,
     val totalCnt: Long,

@@ -1,5 +1,7 @@
 package io.wafflestudio.truffle.core.store.r2dbc
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.base.CaseFormat
 import com.infobip.spring.data.jdbc.annotation.processor.ProjectColumnCaseFormat
 import com.querydsl.sql.MySQLTemplates
@@ -7,6 +9,7 @@ import com.querydsl.sql.SQLTemplates
 import io.r2dbc.pool.ConnectionPool
 import io.r2dbc.pool.ConnectionPoolConfiguration
 import io.r2dbc.spi.ConnectionFactoryOptions
+import io.wafflestudio.truffle.core.store.r2dbc.ExceptionTable.Element
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder
 import org.springframework.context.annotation.Bean
@@ -71,8 +74,19 @@ class R2dbcConfig(
     @Service
     @WritingConverter
     class InstantWriteConverter : Converter<Instant, LocalDateTime> {
-
         override fun convert(source: Instant): LocalDateTime = source.atOffset(ZoneOffset.UTC).toLocalDateTime()
+    }
+
+    @Service
+    @ReadingConverter
+    class ExceptionElementListReadConverter(private val mapper: ObjectMapper) : Converter<String, List<Element>> {
+        override fun convert(source: String): List<Element> = mapper.readValue(source)
+    }
+
+    @Service
+    @WritingConverter
+    class ExceptionElementListWriteConverter(private val mapper: ObjectMapper) : Converter<List<Element>, String> {
+        override fun convert(source: List<Element>): String = mapper.writeValueAsString(source)
     }
 
     override fun getCustomConverters(): List<Any> {

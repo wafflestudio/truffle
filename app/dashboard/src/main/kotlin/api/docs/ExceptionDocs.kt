@@ -40,13 +40,13 @@ import org.springframework.web.bind.annotation.RequestMethod
                     name = "page",
                     `in` = ParameterIn.QUERY,
                     required = true,
-                    schema = Schema(type = "integer", example = "0")
+                    schema = Schema(type = "integer", example = "1", minimum = "1", description = "1부터 시작")
                 ),
                 Parameter(
                     name = "size",
                     `in` = ParameterIn.QUERY,
                     required = true,
-                    schema = Schema(type = "integer", example = "20")
+                    schema = Schema(type = "integer", example = "20", maximum = "20", description = "최대 20")
                 ),
             ],
             responses = [ApiResponse(content = [Content(schema = Schema(implementation = ExceptionListResponse::class))])]
