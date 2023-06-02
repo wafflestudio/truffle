@@ -1,47 +1,44 @@
 package io.wafflestudio.truffle
 
-import com.querydsl.core.types.Projections
-import io.wafflestudio.truffle.core.store.r2dbc.QExceptionEventTable.exceptionEventTable
-import io.wafflestudio.truffle.core.store.r2dbc.QExceptionTable.exceptionTable
-import io.wafflestudio.truffle.core.store.r2dbc.QueryDslRepository
-import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.runBlocking
+import io.wafflestudio.truffle.api.docs.AuthDocs
+import io.wafflestudio.truffle.api.docs.ExceptionDocs
+import io.wafflestudio.truffle.api.filter.ApiSecurityFilter
+import io.wafflestudio.truffle.handler.AuthHandler
+import io.wafflestudio.truffle.handler.ExceptionHandler
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-
-@SpringBootApplication
-class DashboardApplication
+import org.springframework.context.annotation.Bean
+import org.springframework.web.reactive.function.server.buildAndAwait
+import org.springframework.web.reactive.function.server.coRouter
+import java.net.URI
 
 fun main() {
-    val app = runApplication<DashboardApplication>()
-
-    // FIXME
-    val querydsl = app.getBean(QueryDslRepository::class.java)
-
-    runBlocking {
-        querydsl.query { factory ->
-            factory
-                .select(
-                    Projections.constructor(
-                        ExceptionDto::class.java,
-                        exceptionTable.id,
-                        exceptionEventTable.message
-                    )
-                )
-                .from(exceptionTable)
-                .innerJoin(exceptionEventTable)
-                .on(exceptionTable.id.eq(exceptionEventTable.exceptionId))
-        }
-            .all()
-            .asFlow()
-            .collect {
-                println(it)
-            }
-    }
+    runApplication<DashboardApplication>()
 }
 
-// FIXME
-data class ExceptionDto(
-    val id: Long,
-    val message: String?
-)
+@SpringBootApplication
+class DashboardApplication(
+    private val auth: AuthHandler,
+    private val exception: ExceptionHandler,
+    private val securityFilter: ApiSecurityFilter,
+) {
+    @Bean
+    fun swaggerRouter() = coRouter {
+        GET("/") { temporaryRedirect(URI("/swagger-ui.html")).buildAndAwait() }
+    }
+
+    @AuthDocs
+    @Bean
+    fun authRouter() = coRouter {
+        POST("/api/v1/auth", auth::login)
+    }
+
+    @ExceptionDocs
+    @Bean
+    fun exceptionRouter() = coRouter {
+        GET("/api/v1/exceptions", exception::gets)
+        GET("/api/v1/exceptions/{id}", exception::get)
+        PATCH("/api/v1/exceptions/{id}", exception::update)
+    }
+        .filter(securityFilter)
+}

@@ -61,4 +61,8 @@ class CaffeineCache<K, V> internal constructor(
 
         return cached + fetched
     }
+
+    override suspend fun evict(key: K) {
+        caffeineCache.invalidate(key)
+    }
 }

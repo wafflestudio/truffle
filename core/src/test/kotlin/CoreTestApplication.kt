@@ -37,6 +37,8 @@ class NoOpCache<K, V>(
     override suspend fun get(key: K): V? = cacheLoader.load(key)
 
     override suspend fun multiGet(keys: Collection<K>): Map<K, V> = cacheLoader.multiLoad(keys)
+
+    override suspend fun evict(key: K) {}
 }
 
 class NoOpCacheBuilder : CacheBuilder {
