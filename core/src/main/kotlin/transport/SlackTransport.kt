@@ -2,7 +2,7 @@ package io.wafflestudio.truffle.core.transport
 
 import com.slack.api.Slack
 import com.slack.api.methods.AsyncMethodsClient
-import com.slack.api.methods.request.files.FilesUploadRequest.FilesUploadRequestBuilder
+import com.slack.api.methods.request.files.FilesUploadV2Request
 import io.wafflestudio.truffle.core.TruffleEvent
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +21,7 @@ class SlackTransport(
     override suspend fun send(event: TruffleEvent) {
         val targetChannel = event.client?.slackChannel ?: return
 
-        slackClient.filesUpload { builder -> builder.apply(event, targetChannel) }
+        slackClient.filesUploadV2 { builder -> builder.apply(event, targetChannel) }
             .thenAcceptAsync {
                 if (!it.isOk) {
                     logger.error("[TruffleTransportSlackImpl] send failed. {}", it.error)
@@ -33,12 +33,12 @@ class SlackTransport(
             }
     }
 
-    private fun FilesUploadRequestBuilder.apply(event: TruffleEvent, channel: String): FilesUploadRequestBuilder {
+    private fun FilesUploadV2Request.FilesUploadV2RequestBuilder.apply(event: TruffleEvent, channel: String): FilesUploadV2Request.FilesUploadV2RequestBuilder {
         if (event is TruffleEvent.V1) {
-            filetype("text")
+            filename("${event.client?.name}-${event.client?.phase}_${LocalDateTime.now()}.txt")
             title("${event.client?.name}-${event.client?.phase}_${LocalDateTime.now()}.txt")
-            channels(listOf(channel))
-            content(
+            channel(channel)
+            fileData(
                 buildString {
                     val elements = event.exception.elements
 
@@ -49,7 +49,7 @@ class SlackTransport(
                     } else {
                         appendLine()
                     }
-                }
+                }.toByteArray(),
             )
             initialComment("${event.exception.className} : ${event.exception.message}\n${event.description ?: ""}")
         }
