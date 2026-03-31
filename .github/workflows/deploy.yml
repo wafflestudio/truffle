@@ -8,35 +8,34 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-24.04-arm
+
     env:
       IMAGE_TAG: ${{ github.run_number }}
-      BUILD_NUMBER: ${{ github.run_number }}
-      ECR_REGISTRY: 405906814034.dkr.ecr.ap-northeast-2.amazonaws.com
-      ECR_CONSUMER_REPOSITORY: truffle-prod/truffle-consumer
-      ECR_DASHBOARD_REPOSITORY: truffle-prod/truffle-dashboard
+      OCIR_REGISTRY: yny.ocir.io
+      OCIR_NAMESPACE: ax1dvc8vmenm
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+      - name: Login to OCIR
+        run: echo "${{ secrets.OCI_AUTH_TOKEN }}" | docker login $OCIR_REGISTRY -u $OCIR_NAMESPACE/members/waffle-deployer --password-stdin
 
-      - name: Login to ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Docker Build, tag, and push image to ECR
-        id: build-image
+      - name: Docker build, tag, and push image to OCIR
         run: |
-          docker build -f Dockerfile-consumer -t $ECR_REGISTRY/$ECR_CONSUMER_REPOSITORY:$IMAGE_TAG .
-          docker build -f Dockerfile-dashboard -t $ECR_REGISTRY/$ECR_DASHBOARD_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_CONSUMER_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_DASHBOARD_REPOSITORY:$IMAGE_TAG
+          docker build \
+            -f Dockerfile-consumer \
+            -t $OCIR_REGISTRY/$OCIR_NAMESPACE/truffle-prod/truffle-consumer:$IMAGE_TAG \
+            . \
+            --platform linux/arm64
+          docker push $OCIR_REGISTRY/$OCIR_NAMESPACE/truffle-prod/truffle-consumer:$IMAGE_TAG
+
+          docker build \
+            -f Dockerfile-dashboard \
+            -t $OCIR_REGISTRY/$OCIR_NAMESPACE/truffle-prod/truffle-dashboard:$IMAGE_TAG \
+            . \
+            --platform linux/arm64
+          docker push $OCIR_REGISTRY/$OCIR_NAMESPACE/truffle-prod/truffle-dashboard:$IMAGE_TAG
 
       - name: Slack Notify
         uses: rtCamp/action-slack-notify@v2.3.3
