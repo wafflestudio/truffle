@@ -29,6 +29,7 @@ class StoreEventHandlerTest @Autowired constructor(
         exceptionRepository = exceptionRepository,
         exceptionEventRepository = exceptionEventRepository,
         transport = transport,
+        mapper = mapper,
         cacheBuilder = NoOpCacheBuilder()
     )
     val protoEvent = TruffleEvent.V1(
