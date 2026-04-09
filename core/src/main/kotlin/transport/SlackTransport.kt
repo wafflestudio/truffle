@@ -38,7 +38,7 @@ class SlackTransport(
             filename("${event.client?.name}-${event.client?.phase}_${LocalDateTime.now()}.txt")
             title("${event.client?.name}-${event.client?.phase}_${LocalDateTime.now()}.txt")
             channel(channel)
-            fileData(
+            content(
                 buildString {
                     val elements = event.exception.elements
 
@@ -49,7 +49,7 @@ class SlackTransport(
                     } else {
                         appendLine()
                     }
-                }.toByteArray(),
+                },
             )
             initialComment("${event.exception.className} : ${event.exception.message}\n${event.description ?: ""}")
         }
