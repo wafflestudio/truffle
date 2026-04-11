@@ -20,15 +20,49 @@ class SlackTransport(
 
     override suspend fun send(event: TruffleEvent) {
         val targetChannel = event.client?.slackChannel ?: return
+        val client = event.client
+
+        if (event is TruffleEvent.V1)
+            logger.info(
+                "[TruffleTransportSlackImpl] sending event. clientId={}, clientName={}, clientPhase={}, channel={}, exceptionClass={}, exceptionMessage={}",
+                client?.id,
+                client?.name,
+                client?.phase,
+                targetChannel,
+                event.exception.className,
+                event.exception.message
+            )
 
         slackClient.filesUploadV2 { builder -> builder.apply(event, targetChannel) }
             .thenAcceptAsync {
-                if (!it.isOk) {
-                    logger.error("[TruffleTransportSlackImpl] send failed. {}", it.error)
+                if (it.isOk) {
+                    logger.info(
+                        "[TruffleTransportSlackImpl] send succeeded. clientId={}, clientName={}, clientPhase={}, channel={}",
+                        client?.id,
+                        client?.name,
+                        client?.phase,
+                        targetChannel,
+                    )
+                } else {
+                    logger.error(
+                        "[TruffleTransportSlackImpl] send failed. clientId={}, clientName={}, clientPhase={}, channel={}, error={}",
+                        client?.id,
+                        client?.name,
+                        client?.phase,
+                        targetChannel,
+                        it.error,
+                    )
                 }
             }
             .exceptionally {
-                logger.error("[TruffleTransportSlackImpl] send failed", it)
+                logger.error(
+                    "[TruffleTransportSlackImpl] send failed. clientId={}, clientName={}, clientPhase={}, channel={}",
+                    client?.id,
+                    client?.name,
+                    client?.phase,
+                    targetChannel,
+                    it,
+                )
                 null
             }
     }
