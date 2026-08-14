@@ -24,6 +24,6 @@ class TruffleClientRegistryImpl(
         name = "TruffleClientRegistry:AppCache",
         ttl = Duration.ofHours(1),
     ) { apiKey ->
-        appRepository.findByApiKey(apiKey)?.let { TruffleClient(it.id, it.name, it.phase, it.slackChannel) }
+        appRepository.findByApiKey(apiKey)?.let { TruffleClient(it.id, it.name, it.phase, it.discordWebhookUrl) }
     }
 }

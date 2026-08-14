@@ -10,5 +10,5 @@ data class AppTable(
     val name: String,
     val phase: String,
     val apiKey: String,
-    val slackChannel: String?,
+    val discordWebhookUrl: String?,
 )
