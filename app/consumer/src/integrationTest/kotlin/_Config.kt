@@ -37,7 +37,7 @@ class IntegrationTestConfig(
 class TestClientClientRegistry : TruffleClientRegistry {
     override suspend fun findByApiKey(apiKey: String): TruffleClient? =
         if (apiKey == "test") {
-            TruffleClient(id = 1, name = "integrationTest", slackChannel = "truffle-snutt-dev", phase = "development")
+            TruffleClient(id = 1, name = "integrationTest", discordWebhookUrl = null, phase = "development")
         } else {
             null
         }

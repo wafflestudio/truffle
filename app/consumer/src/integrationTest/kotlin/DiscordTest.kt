@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @IntegrationTest
-class SlackTest @Autowired constructor(
+class DiscordTest @Autowired constructor(
     private val webTestClient: WebTestClient,
 ) {
 

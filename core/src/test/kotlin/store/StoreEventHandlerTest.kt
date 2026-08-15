@@ -68,7 +68,7 @@ class StoreEventHandlerTest @Autowired constructor(
     fun `새로운 익셉션의 경우, 익셉션과 이벤트를 동시에 저장한다`(): Unit = runBlocking {
         // Given
         val clientEvent = protoEvent
-        val client = TruffleClient(id = 1, name = "testApp", phase = "production", slackChannel = null)
+        val client = TruffleClient(id = 1, name = "testApp", phase = "production", discordWebhookUrl = null)
         clientEvent.client = client
 
         // When
@@ -104,7 +104,7 @@ class StoreEventHandlerTest @Autowired constructor(
     fun `이전에 발생한 익셉션의 경우, 이벤트만 저장한다`(): Unit = runBlocking {
         // Given
         val clientEvent = protoEvent
-        val client = TruffleClient(id = 1, name = "testApp", phase = "production", slackChannel = null)
+        val client = TruffleClient(id = 1, name = "testApp", phase = "production", discordWebhookUrl = null)
         clientEvent.client = client
 
         handler.handle(clientEvent)

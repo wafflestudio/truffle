@@ -9,6 +9,6 @@ dependencies {
     api("com.infobip:infobip-spring-data-r2dbc-querydsl-boot-starter:8.1.0")
     kapt("com.infobip:infobip-spring-data-jdbc-annotation-processor-common:8.1.0")
 
-    implementation("com.slack.api:slack-api-client:1.38.1")
+    implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.3")
 }
